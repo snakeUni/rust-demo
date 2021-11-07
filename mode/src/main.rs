@@ -7,7 +7,7 @@ enum Message {
 
 enum Color {
     Rgb(i32, i32, i32),
-    Hsv(i32, i32, i32)
+    Hsv(i32, i32, i32),
 }
 
 fn main() {
@@ -15,22 +15,14 @@ fn main() {
 
     match msg {
         Message::ChangeColor(Color::Rgb(r, g, b)) => {
-            println!(
-                "Change the color to red {}, green {}, and blue {}",
-                r,
-                g,
-                b
-            )
+            println!("Change the color to red {}, green {}, and blue {}", r, g, b)
         }
         Message::ChangeColor(Color::Hsv(h, s, v)) => {
             println!(
                 "Change the color to hue {}, saturation {}, and value {}",
-                h,
-                s,
-                v
+                h, s, v
             )
         }
-        _ => ()
+        _ => (),
     }
-
 }
