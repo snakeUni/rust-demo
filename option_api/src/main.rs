@@ -75,4 +75,38 @@ fn main() {
     assert_eq!(Some("foo").ok_or(0), Ok("foo"));
     let oko: Option<&str> = None;
     assert_eq!(oko.ok_or(0), Err(0));
+
+    // ok_or_else
+    // Transforms the Option<T> into a Result<T, E>, mapping Some(v) to Ok(v) and None to Err(err()).
+    let ooe = Some("foo");
+    assert_eq!(ooe.ok_or_else(|| 0), Ok("foo"));
+    let ooe_n: Option<&str> = None;
+    assert_eq!(ooe_n.ok_or_else(|| 0), Err(0));
+
+    // as_deref Converts from Option<T> (or &Option<T>) to Option<&T::Target>.
+    let ad: Option<String> = Some("hey".to_owned());
+    assert_eq!(ad.as_deref(), Some("hey"));
+
+    let ad_n: Option<String> = None;
+    assert_eq!(ad_n.as_deref(), None);
+
+    // iter 返回一个迭代
+
+    // iter_mut 迭代是可以突变的
+
+    // add Returns None if the option is None, otherwise returns optb.
+    // and<U>(self, optb: Option<U>) -> Option<U>
+    // 如果只要有一个 None 就返回 None,否则返回后面的那个参数。
+    assert_eq!(Some(2).and(None as Option<&str>), None);
+    assert_eq!((None as Option<&str>).and(Some("foo")), None);
+    assert_eq!(Some(2).and(Some("foo")), Some("foo"));
+    assert_eq!((None as Option<u32>).and((None as Option<&str>)), None);
+
+    // add_then
+    let arr_2d = [["A0", "A1"], ["B0", "B1"]];
+    let item_0_1 = arr_2d.get(0).and_then(|row| row.get(1));
+    assert_eq!(item_0_1, Some(&"A1"));
+
+    let item_2_0 = arr_2d.get(2).and_then(|row| row.get(0));
+    assert_eq!(item_2_0, None);
 }
