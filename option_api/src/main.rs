@@ -109,4 +109,106 @@ fn main() {
 
     let item_2_0 = arr_2d.get(2).and_then(|row| row.get(0));
     assert_eq!(item_2_0, None);
+
+    // filter Returns None if the option is None, otherwise calls predicate with the wrapped value and returns:
+    // Some(t) if predicate returns true (where t is the wrapped value), and
+    // None if predicate returns false.
+    fn is_even(n: &i32) -> bool {
+        n % 2 == 0
+    }
+    assert_eq!(None.filter(is_even), None);
+    assert_eq!(Some(3).filter(is_even), None);
+    assert_eq!(Some(4).filter(is_even), Some(4));
+
+    // or Returns the option if it contains a value, otherwise returns optb.
+    assert_eq!(Some(2).or(None), Some(2));
+    assert_eq!(None.or(Some(100)), Some(100));
+    assert_eq!(Some(2).or(Some(100)), Some(2));
+    assert_eq!((None as Option<u32>).or(None), None);
+
+    // or_else Returns the option if it contains a value, otherwise calls f and returns the result.
+    fn nobody() -> Option<&'static str> {
+        None
+    }
+    fn vikings() -> Option<&'static str> {
+        Some("vikings")
+    }
+    assert_eq!(Some("barbarians").or_else(vikings), Some("vikings"));
+    assert_eq!(None.or_else(vikings), Some("vikings"));
+    assert_eq!(None.or_else(nobody), None);
+
+    // xor Returns Some if exactly one of self, optb is Some, otherwise returns None.
+    // 类似异或操作
+    assert_eq!(Some(2).xor((None as Option<u32>)), Some(2));
+    assert_eq!((None as Option<u32>).xor(Some(2)), Some(2));
+    assert_eq!(Some(2).xor(Some(2)), None);
+    assert_eq!((None as Option<u32>).xor((None as Option<u32>)), None);
+
+    // insert insert(&mut self, value: T) -> &mut T
+    let mut opt = None;
+    let val = opt.insert(1);
+    assert_eq!(*val, 1);
+    assert_eq!(opt.unwrap(), 1);
+    let val = opt.insert(2);
+    assert_eq!(*val, 2);
+    *val = 3;
+    assert_eq!(opt.unwrap(), 3);
+
+    // get_or_insert_with<F>(&mut self, f: F) -> &mut T
+    let mut goi = None;
+    {
+        let y: &mut u32 = goi.get_or_insert_with(|| 5);
+        assert_eq!(y, &5);
+
+        *y = 7;
+    }
+    assert_eq!(goi, Some(7));
+
+    // take Takes the value out of the option, leaving a None in its place.
+    let mut take = Some(2);
+    let take_y = take.take();
+    assert_eq!(take, None);
+    assert_eq!(take_y, Some(2));
+
+    let mut take_n: Option<u32> = None;
+    let take_ny = take_n.take();
+    assert_eq!(take_n, None);
+    assert_eq!(take_ny, None);
+
+    // replace
+    let mut rep = Some(2);
+    let old_rep = rep.replace(5);
+    assert_eq!(rep, Some(5));
+    assert_eq!(old_rep, Some(2));
+
+    let mut rep_none = None;
+    let old_n = rep_none.replace(3);
+    assert_eq!(rep_none, Some(3));
+    assert_eq!(old_n, None);
+
+    // zip zip<U>(self, other: Option<U>) -> Option<(T, U)>
+    assert_eq!(Some(1).zip(Some("hi")), Some((1, "hi")));
+    assert_eq!(Some(1).zip(None::<u8>), None);
+
+    // zip_with zip_with<U, F, R>(self, other: Option<U>, f: F) -> Option<R>
+    // If self is Some(s) and other is Some(o), this method returns Some(f(s, o)). Otherwise, None is returned.
+
+    // copied Maps an Option<&T> to an Option<T> by copying the contents of the option.
+    let cx = 12;
+    let opt_x = Some(&cx);
+    assert_eq!(opt_x, Some(&12));
+    let copied = opt_x.copied();
+    assert_eq!(copied, Some(12));
+
+    // cloned Maps an Option<&T> to an Option<T> by cloning the contents of the option.
+    let clx = 12;
+    let cl_opt_x = Some(&clx);
+    assert_eq!(cl_opt_x, Some(&12));
+    let cloned = cl_opt_x.cloned();
+    assert_eq!(cloned, Some(12));
+
+    // from
+    // from(o: &'a Option<T>) -> Option<&'a T> Converts from &Option<T> to Option<&T>.
+    // from(o: &'a mut Option<T>) -> Option<&'a mut T>  Converts from &mut Option<T> to Option<&mut T>
+    // from(val: T) -> Option<T> Moves val into a new Some.
 }
